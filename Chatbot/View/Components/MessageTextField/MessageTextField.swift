@@ -14,25 +14,6 @@ protocol MessageTextFieldDelegate: class {
 }
 
 
-private protocol TextValidating {
-    func isValid(text: String) -> Bool
-}
-
-
-struct AsciiTextValidator: TextValidating {
-    func isValid(text: String) -> Bool {
-        return CharacterSet.letters.isSuperset(of: CharacterSet(charactersIn: text))
-    }
-}
-
-
-struct NumeralTextValidator: TextValidating {
-    func isValid(text: String) -> Bool {
-        return CharacterSet.decimalDigits.isSuperset(of: CharacterSet(charactersIn: text))
-    }
-}
-
-
 final class MessageTextField: XibView {
     enum InputMode {
         case text
@@ -127,5 +108,23 @@ extension MessageTextField: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         triggerMessageProcessing()
         return true
+    }
+}
+
+private protocol TextValidating {
+    func isValid(text: String) -> Bool
+}
+
+
+private struct AsciiTextValidator: TextValidating {
+    func isValid(text: String) -> Bool {
+        return CharacterSet.letters.isSuperset(of: CharacterSet(charactersIn: text))
+    }
+}
+
+
+private struct NumeralTextValidator: TextValidating {
+    func isValid(text: String) -> Bool {
+        return CharacterSet.decimalDigits.isSuperset(of: CharacterSet(charactersIn: text))
     }
 }

@@ -22,35 +22,14 @@ struct ChatMessage: Codable {
 }
 
 
-private struct MessageInspector {
-    let originalMessage: String
-    let sendableMessage: String
-    
-    init(message: String) {
-        originalMessage = message
-        sendableMessage = Self.formatMessageForSending(message)
-    }
-    
-    var isValid: Bool {
-        return !sendableMessage.isEmpty
-    }
-    
-    private static func formatMessageForSending(_ message: String) -> String {
-        return message.trimmingCharacters(in: .whitespaces)
-    }
-}
-
-
 final class ChatViewController: UIViewController {
     
     // MARK: Outlets
     
     @IBOutlet private weak var inputArea: MessageInputField!
-    
-    @IBOutlet private weak var bottomFill: UIView!
+    @IBOutlet private weak var inputAreaBottomConstraint: NSLayoutConstraint!
     
     @IBOutlet private weak var chatTableView: UITableView!
-    @IBOutlet private weak var inputAreaBottomConstraint: NSLayoutConstraint!
     
     // MARK: Properties
     
@@ -281,5 +260,24 @@ extension MessageInputField.InputMode {
         case .email:                  return .email
         case .selection(let options): return .selection(options: options)
         }
+    }
+}
+
+
+private struct MessageInspector {
+    let originalMessage: String
+    let sendableMessage: String
+    
+    init(message: String) {
+        originalMessage = message
+        sendableMessage = Self.formatMessageForSending(message)
+    }
+    
+    var isValid: Bool {
+        return !sendableMessage.isEmpty
+    }
+    
+    private static func formatMessageForSending(_ message: String) -> String {
+        return message.trimmingCharacters(in: .whitespaces)
     }
 }

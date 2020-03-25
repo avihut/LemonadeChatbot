@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="15705" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="TbX-eq-sQu">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="16096" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="TbX-eq-sQu">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15706"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="16086"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -169,7 +169,6 @@
                         <viewLayoutGuide key="safeArea" id="UHB-iL-reV"/>
                     </view>
                     <connections>
-                        <outlet property="bottomFill" destination="f9w-e1-uS1" id="VT7-x4-ZLn"/>
                         <outlet property="chatTableView" destination="W6p-N5-Zbr" id="Phl-nO-f7V"/>
                         <outlet property="inputArea" destination="dXb-14-F7U" id="QGM-5r-0AL"/>
                         <outlet property="inputAreaBottomConstraint" destination="473-qD-MSH" id="Sbn-MK-9gK"/>
