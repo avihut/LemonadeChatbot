@@ -72,18 +72,18 @@ final class MessageInputField: XibView {
     
     private func updateViews() {
         switch inputMode {
-        case .text:                   switchToMessageTextField(with: .asciiCapable)
-        case .numbers:                switchToMessageTextField(with: .numberPad)
-        case .phone:                  switchToMessageTextField(with: .phonePad)
-        case .email:                  switchToMessageTextField(with: .emailAddress)
+        case .text:                   switchToMessageTextField()
+        case .numbers:                switchToMessageTextField()
+        case .phone:                  switchToMessageTextField()
+        case .email:                  switchToMessageTextField()
         case .selection(let options): switchToMessageSelectionField(with: options)
         case .disabled:
-            switchToMessageTextField(with: .asciiCapable, disabled: true)
+            switchToMessageTextField(disabled: true)
             placeholder = ""
         }
     }
     
-    private func switchToMessageTextField(with keyboardType: UIKeyboardType, disabled: Bool = false) {
+    private func switchToMessageTextField(disabled: Bool = false) {
         if messageTextFieldView == nil {
             clearInputViews()
             messageTextFieldView = MessageTextField()
@@ -92,7 +92,7 @@ final class MessageInputField: XibView {
             messageTextFieldView?.placeholder = placeholder
         }
         
-        messageTextFieldView?.keyboardType = keyboardType
+        messageTextFieldView?.inputMode = .from(inputFieldMode: inputMode)
         isEnabled = !disabled
     }
     
@@ -119,5 +119,18 @@ final class MessageInputField: XibView {
 extension MessageInputField: MessageTextFieldDelegate {
     func process(message: String) {
         delegate?.process(message: message)
+    }
+}
+
+
+extension MessageTextField.InputMode {
+    static func from(inputFieldMode: MessageInputField.InputMode) -> MessageTextField.InputMode {
+        switch inputFieldMode {
+        case .text:    return .text
+        case .numbers: return .numbers
+        case .phone:   return .phone
+        case .email:   return .email
+        default:       return .text
+        }
     }
 }
