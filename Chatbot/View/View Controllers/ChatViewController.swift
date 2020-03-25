@@ -23,6 +23,25 @@ struct ChatMessage: Codable {
 }
 
 
+private struct MessageInspector {
+    let originalMessage: String
+    let sendableMessage: String
+    
+    init(message: String) {
+        originalMessage = message
+        sendableMessage = Self.formatMessageForSending(message)
+    }
+    
+    var isValid: Bool {
+        return !sendableMessage.isEmpty
+    }
+    
+    private static func formatMessageForSending(_ message: String) -> String {
+        return message.trimmingCharacters(in: .whitespaces)
+    }
+}
+
+
 final class ChatViewController: UIViewController {
     
     // MARK: Outlets
@@ -33,16 +52,6 @@ final class ChatViewController: UIViewController {
     
     @IBOutlet private weak var chatTableView: UITableView!
     @IBOutlet private weak var inputAreaBottomConstraint: NSLayoutConstraint!
-    
-//    @IBOutlet private weak var selectionContainer: UIView!
-//
-//    @IBOutlet private weak var leftResponseButton: UIButton!
-//    @IBOutlet private weak var rightResponseButton: UIButton!
-//
-//    @IBOutlet private weak var textFieldContainer: UIView!
-//
-//    @IBOutlet private weak var messageTextField: UITextField!
-//    @IBOutlet private weak var sendMessageButton: UIButton!
     
     // MARK: Properties
     
@@ -71,7 +80,9 @@ final class ChatViewController: UIViewController {
     private var inputType: AnswerInputType? = .text {
         didSet {
             inputArea.inputMode = .from(answerInputType: inputType)
-//            updateInputView()
+            if inputType != nil {
+                inputArea.becomeFirstResponder()
+            }
         }
     }
     
@@ -93,11 +104,12 @@ final class ChatViewController: UIViewController {
             self?.view.layoutIfNeeded()
             self?.scrollToBottom()
         }
+        
+        inputArea.delegate = self
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        disableInputView()
         loadMessages()
     }
     
@@ -105,88 +117,6 @@ final class ChatViewController: UIViewController {
         super.viewDidAppear(animated)
         isBotTyping = true
         remote.startChat(withToken: chatToken, withHandler: handleMessageResponse(result:))
-    }
-    
-    // MARK: Actions
-    
-    @IBAction private func sendMessageTapped() {
-//        guard let text = messageTextField.text?.trimmingCharacters(in: .whitespaces), !text.isEmpty else {
-//            return
-//        }
-//
-//        messageTextField.text = ""
-//        send(message: text)
-    }
-    
-    @IBAction func selectionButtonTapped(_ sender: UIButton) {
-//        guard let message = sender.title(for: .normal) else {
-//            print("Button unexpectedly doesn't have title.")
-//            return
-//        }
-//
-//        send(message: message)
-    }
-    
-    // MARK: Input View Management
-    
-    private func updateInputView() {
-        if let inputType = inputType {
-            switch inputType {
-            case .numeric:
-                showTextField()
-                update(keyboardType: .numberPad)
-                
-            case .phone:
-                showTextField()
-                update(keyboardType: .phonePad)
-                
-            case .text:
-                showTextField()
-                update(keyboardType: .asciiCapable)
-                
-            case .email:
-                showTextField()
-                update(keyboardType: .emailAddress)
-                
-            case .selection(let options):
-                showSelectionButtons(with: options)
-            }
-        } else {
-            disableInputView()
-        }
-    }
-    
-    private func update(keyboardType: UIKeyboardType) {
-//        messageTextField.keyboardType = keyboardType
-//        messageTextField.reloadInputViews()
-    }
-    
-    private func disableInputView() {
-//        showTextField(focus: false)
-//        messageTextField.placeholder = ""
-//        messageTextField.isEnabled = false
-//        sendMessageButton.isEnabled = false
-    }
-    
-    private func showTextField(focus: Bool = true) {
-//        textFieldContainer.isHidden = false
-//        selectionContainer.isHidden = true
-//
-//        if focus {
-//            messageTextField.isEnabled = true
-//            sendMessageButton.isEnabled = true
-//            messageTextField.becomeFirstResponder()
-//        }
-    }
-    
-    private func showSelectionButtons(with options: [String]) {
-//        textFieldContainer.isHidden = true
-//        selectionContainer.isHidden = false
-//        
-//        messageTextField.resignFirstResponder()
-//        
-//        leftResponseButton.setTitle(options[0], for: .normal)
-//        rightResponseButton.setTitle(options[1], for: .normal)
     }
     
     // MARK: Chat View
@@ -216,7 +146,7 @@ final class ChatViewController: UIViewController {
         
         DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(accumulatedDelay)) { [weak self] in
             self?.inputType = newMessage.inputType
-//            self?.messageTextField.placeholder = newMessage.messageFieldPlaceholder
+            self?.inputArea.placeholder = newMessage.messageFieldPlaceholder ?? ""
             self?.saveMessages()
         }
     }
@@ -229,7 +159,6 @@ final class ChatViewController: UIViewController {
         
         let myMessage = ChatMessage(side: .local, text: message)
         messages.append(myMessage)
-        disableInputView()
         
         isBotTyping = true
         
@@ -251,6 +180,7 @@ final class ChatViewController: UIViewController {
             }
             
             chatTableView.reloadData()
+            scrollToBottom()
         }
     }
     
@@ -321,6 +251,20 @@ extension ChatViewController: UITableViewDataSource {
         let footerView = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.width, height: 1))
         footerView.backgroundColor = .darkGray
         return footerView
+    }
+}
+
+
+extension ChatViewController: MessageInputFieldDelegate {
+    func process(message: String) {
+        let inspectedMessage = MessageInspector(message: message)
+        guard inspectedMessage.isValid else {
+            return
+        }
+        
+        inputArea.clearText()
+        inputType = nil
+        send(message: inspectedMessage.sendableMessage)
     }
 }
 

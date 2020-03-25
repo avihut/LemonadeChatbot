@@ -10,7 +10,7 @@ import UIKit
 
 
 protocol MessageInputFieldDelegate: class {
-    func userWantsToSend(message: String)
+    func process(message: String)
 }
 
 
@@ -24,27 +24,51 @@ final class MessageInputField: XibView {
         case disabled
     }
     
+    weak var delegate: MessageInputFieldDelegate?
+    
     var inputMode: InputMode = .text {
         didSet {
             updateViews()
         }
     }
     
-    var placeholder: String? {
-        didSet {}
+    var placeholder: String = "" {
+        didSet {
+            messageTextFieldView?.placeholder = placeholder
+        }
     }
     
-    weak var delegate: MessageInputFieldDelegate?
+    var isEnabled: Bool = true {
+        didSet {
+            messageTextFieldView?.isEnabled = isEnabled
+        }
+    }
     
     private var messageTextFieldView: MessageTextField?
     private var messageSelectionFieldView: MessageSelectionField?
+    
+    private var inputSubviewe: [UIView] {
+        return [messageTextFieldView, messageSelectionFieldView].compactMap { $0 }
+    }
+    
+    private var activeInputSubview: UIView? {
+        return inputSubviewe.first
+    }
     
     override func viewWillInitialize() {
         super.viewWillInitialize()
         updateViews()
     }
     
-    func clearText() {}
+    func clearText() {
+        messageTextFieldView?.clearText()
+    }
+    
+    @discardableResult override func becomeFirstResponder() -> Bool {
+        let isFirstResponder = super.becomeFirstResponder()
+        let wasActiveInputFirstResponder = activeInputSubview?.becomeFirstResponder() ?? false
+        return isFirstResponder && wasActiveInputFirstResponder
+    }
     
     private func updateViews() {
         switch inputMode {
@@ -53,20 +77,23 @@ final class MessageInputField: XibView {
         case .phone:                  switchToMessageTextField(with: .phonePad)
         case .email:                  switchToMessageTextField(with: .emailAddress)
         case .selection(let options): switchToMessageSelectionField(with: options)
-        case .disabled:               switchToMessageTextField(with: .asciiCapable, disabled: true)
+        case .disabled:
+            switchToMessageTextField(with: .asciiCapable, disabled: true)
+            placeholder = ""
         }
     }
     
     private func switchToMessageTextField(with keyboardType: UIKeyboardType, disabled: Bool = false) {
-        guard messageTextFieldView == nil else {
-            return
+        if messageTextFieldView == nil {
+            clearInputViews()
+            messageTextFieldView = MessageTextField()
+            messageTextFieldView?.delegate = self
+            messageTextFieldView?.addAndPin(to: self)
+            messageTextFieldView?.placeholder = placeholder
         }
         
-        clearInputViews()
-        
-        let messageTextFieldView = MessageTextField()
-        messageTextFieldView.addAndPin(to: self)
-        self.messageTextFieldView = messageTextFieldView
+        messageTextFieldView?.keyboardType = keyboardType
+        isEnabled = !disabled
     }
     
     private func switchToMessageSelectionField(with options: [String]) {
@@ -75,6 +102,8 @@ final class MessageInputField: XibView {
         }
         
         clearInputViews()
+        messageSelectionFieldView = MessageSelectionField()
+        messageSelectionFieldView?.addAndPin(to: self)
     }
     
     private func clearInputViews() {
@@ -84,5 +113,11 @@ final class MessageInputField: XibView {
         
         messageTextFieldView = nil
         messageSelectionFieldView = nil
+    }
+}
+
+extension MessageInputField: MessageTextFieldDelegate {
+    func process(message: String) {
+        delegate?.process(message: message)
     }
 }

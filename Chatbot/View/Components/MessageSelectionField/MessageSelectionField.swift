@@ -10,5 +10,5 @@ import UIKit
 
 
 final class MessageSelectionField: XibView {
-    
+    @IBOutlet private weak var optionsCollectionView: UICollectionView!
 }
