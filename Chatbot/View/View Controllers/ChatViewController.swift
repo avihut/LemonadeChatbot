@@ -27,22 +27,22 @@ final class ChatViewController: UIViewController {
     
     // MARK: Outlets
     
-    @IBOutlet private weak var inputArea: UIView!
+    @IBOutlet private weak var inputArea: MessageInputField!
     
     @IBOutlet private weak var bottomFill: UIView!
     
     @IBOutlet private weak var chatTableView: UITableView!
     @IBOutlet private weak var inputAreaBottomConstraint: NSLayoutConstraint!
     
-    @IBOutlet private weak var selectionContainer: UIView!
-    
-    @IBOutlet private weak var leftResponseButton: UIButton!
-    @IBOutlet private weak var rightResponseButton: UIButton!
-    
-    @IBOutlet private weak var textFieldContainer: UIView!
-    
-    @IBOutlet private weak var messageTextField: UITextField!
-    @IBOutlet private weak var sendMessageButton: UIButton!
+//    @IBOutlet private weak var selectionContainer: UIView!
+//
+//    @IBOutlet private weak var leftResponseButton: UIButton!
+//    @IBOutlet private weak var rightResponseButton: UIButton!
+//
+//    @IBOutlet private weak var textFieldContainer: UIView!
+//
+//    @IBOutlet private weak var messageTextField: UITextField!
+//    @IBOutlet private weak var sendMessageButton: UIButton!
     
     // MARK: Properties
     
@@ -70,7 +70,8 @@ final class ChatViewController: UIViewController {
     
     private var inputType: AnswerInputType? = .text {
         didSet {
-            updateInputView()
+            inputArea.inputMode = .from(answerInputType: inputType)
+//            updateInputView()
         }
     }
     
@@ -109,21 +110,21 @@ final class ChatViewController: UIViewController {
     // MARK: Actions
     
     @IBAction private func sendMessageTapped() {
-        guard let text = messageTextField.text?.trimmingCharacters(in: .whitespaces), !text.isEmpty else {
-            return
-        }
-        
-        messageTextField.text = ""
-        send(message: text)
+//        guard let text = messageTextField.text?.trimmingCharacters(in: .whitespaces), !text.isEmpty else {
+//            return
+//        }
+//
+//        messageTextField.text = ""
+//        send(message: text)
     }
     
     @IBAction func selectionButtonTapped(_ sender: UIButton) {
-        guard let message = sender.title(for: .normal) else {
-            print("Button unexpectedly doesn't have title.")
-            return
-        }
-        
-        send(message: message)
+//        guard let message = sender.title(for: .normal) else {
+//            print("Button unexpectedly doesn't have title.")
+//            return
+//        }
+//
+//        send(message: message)
     }
     
     // MARK: Input View Management
@@ -156,36 +157,36 @@ final class ChatViewController: UIViewController {
     }
     
     private func update(keyboardType: UIKeyboardType) {
-        messageTextField.keyboardType = keyboardType
-        messageTextField.reloadInputViews()
+//        messageTextField.keyboardType = keyboardType
+//        messageTextField.reloadInputViews()
     }
     
     private func disableInputView() {
-        showTextField(focus: false)
-        messageTextField.placeholder = ""
-        messageTextField.isEnabled = false
-        sendMessageButton.isEnabled = false
+//        showTextField(focus: false)
+//        messageTextField.placeholder = ""
+//        messageTextField.isEnabled = false
+//        sendMessageButton.isEnabled = false
     }
     
     private func showTextField(focus: Bool = true) {
-        textFieldContainer.isHidden = false
-        selectionContainer.isHidden = true
-        
-        if focus {
-            messageTextField.isEnabled = true
-            sendMessageButton.isEnabled = true
-            messageTextField.becomeFirstResponder()
-        }
+//        textFieldContainer.isHidden = false
+//        selectionContainer.isHidden = true
+//
+//        if focus {
+//            messageTextField.isEnabled = true
+//            sendMessageButton.isEnabled = true
+//            messageTextField.becomeFirstResponder()
+//        }
     }
     
     private func showSelectionButtons(with options: [String]) {
-        textFieldContainer.isHidden = true
-        selectionContainer.isHidden = false
-        
-        messageTextField.resignFirstResponder()
-        
-        leftResponseButton.setTitle(options[0], for: .normal)
-        rightResponseButton.setTitle(options[1], for: .normal)
+//        textFieldContainer.isHidden = true
+//        selectionContainer.isHidden = false
+//        
+//        messageTextField.resignFirstResponder()
+//        
+//        leftResponseButton.setTitle(options[0], for: .normal)
+//        rightResponseButton.setTitle(options[1], for: .normal)
     }
     
     // MARK: Chat View
@@ -215,7 +216,7 @@ final class ChatViewController: UIViewController {
         
         DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(accumulatedDelay)) { [weak self] in
             self?.inputType = newMessage.inputType
-            self?.messageTextField.placeholder = newMessage.messageFieldPlaceholder
+//            self?.messageTextField.placeholder = newMessage.messageFieldPlaceholder
             self?.saveMessages()
         }
     }
@@ -336,5 +337,22 @@ extension ChatViewController: UITextFieldDelegate {
         default: break
         }
         return true
+    }
+}
+
+
+extension MessageInputField.InputMode {
+    static func from(answerInputType: AnswerInputType?) -> MessageInputField.InputMode {
+        guard let answerInputType = answerInputType else {
+            return .disabled
+        }
+        
+        switch answerInputType {
+        case .numeric:                return .numbers
+        case .phone:                  return .phone
+        case .text:                   return .text
+        case .email:                  return .email
+        case .selection(let options): return .selection(options: options)
+        }
     }
 }
