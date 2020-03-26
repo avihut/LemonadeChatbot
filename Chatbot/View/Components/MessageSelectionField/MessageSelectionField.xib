@@ -16,16 +16,16 @@
             <rect key="frame" x="0.0" y="0.0" width="414" height="52"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" spacing="4" translatesAutoresizingMaskIntoConstraints="NO" id="6Uy-3L-jW3">
-                    <rect key="frame" x="0.0" y="0.0" width="414" height="52"/>
+                <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" spacing="12" translatesAutoresizingMaskIntoConstraints="NO" id="6Uy-3L-jW3">
+                    <rect key="frame" x="12" y="0.0" width="390" height="52"/>
                 </stackView>
             </subviews>
             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
             <constraints>
-                <constraint firstItem="6Uy-3L-jW3" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="G40-aB-czY"/>
+                <constraint firstItem="6Uy-3L-jW3" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="12" id="G40-aB-czY"/>
                 <constraint firstAttribute="bottom" secondItem="6Uy-3L-jW3" secondAttribute="bottom" id="G8r-Cc-VlU"/>
                 <constraint firstItem="6Uy-3L-jW3" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="w2U-w5-v9G"/>
-                <constraint firstAttribute="trailing" secondItem="6Uy-3L-jW3" secondAttribute="trailing" id="xrl-Mo-9Xy"/>
+                <constraint firstAttribute="trailing" secondItem="6Uy-3L-jW3" secondAttribute="trailing" constant="12" id="xrl-Mo-9Xy"/>
             </constraints>
             <nil key="simulatedTopBarMetrics"/>
             <nil key="simulatedBottomBarMetrics"/>

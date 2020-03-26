@@ -30,6 +30,8 @@ final class MessageSelectionField: XibView {
         options.forEach { option in
             let button = createSelectionButton(saying: option)
             selectionButtonsStackView.addArrangedSubview(button)
+            button.heightAnchor.constraint(equalTo: selectionButtonsStackView.heightAnchor, multiplier: 0.8).isActive = true
+            button.layer.cornerRadius = selectionButtonsStackView.frame.height * 0.4
         }
     }
     
@@ -41,7 +43,7 @@ final class MessageSelectionField: XibView {
         let button = UIButton()
         button.setTitle(text, for: .normal)
         button.setTitleColor(.black, for: .normal)
-        button.backgroundColor = UIColor.gray.withAlphaComponent(0.1)
+        button.backgroundColor = UIColor.gray.withAlphaComponent(0.2)
         button.addTarget(self, action: #selector(optionButtonTapped(sender:)), for: .touchUpInside)
         return button
     }
