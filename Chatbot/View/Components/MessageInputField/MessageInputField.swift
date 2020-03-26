@@ -97,13 +97,14 @@ final class MessageInputField: XibView {
     }
     
     private func switchToMessageSelectionField(with options: [String]) {
-        guard messageSelectionFieldView == nil else {
-            return
+        if messageSelectionFieldView == nil {
+            clearInputViews()
+            messageSelectionFieldView = MessageSelectionField()
+            messageSelectionFieldView?.delegate = self
+            messageSelectionFieldView?.addAndPin(to: self)
         }
         
-        clearInputViews()
-        messageSelectionFieldView = MessageSelectionField()
-        messageSelectionFieldView?.addAndPin(to: self)
+        messageSelectionFieldView?.options = options
     }
     
     private func clearInputViews() {
@@ -116,7 +117,7 @@ final class MessageInputField: XibView {
     }
 }
 
-extension MessageInputField: MessageTextFieldDelegate {
+extension MessageInputField: MessageTextFieldDelegate, MessageSelectionFieldDelegate {
     func process(message: String) {
         delegate?.process(message: message)
     }

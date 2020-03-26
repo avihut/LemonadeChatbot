@@ -9,6 +9,44 @@
 import UIKit
 
 
+protocol MessageSelectionFieldDelegate: class {
+    func process(message: String)
+}
+
+
 final class MessageSelectionField: XibView {
-    @IBOutlet private weak var optionsCollectionView: UICollectionView!
+    @IBOutlet private weak var selectionButtonsStackView: UIStackView!
+    
+    weak var delegate: MessageSelectionFieldDelegate?
+    
+    var options: [String] = [] {
+        didSet {
+            populateOptions()
+        }
+    }
+    
+    private func populateOptions() {
+        clearButtons()
+        options.forEach { option in
+            let button = createSelectionButton(saying: option)
+            selectionButtonsStackView.addArrangedSubview(button)
+        }
+    }
+    
+    private func clearButtons() {
+        selectionButtonsStackView.subviews.forEach { $0.removeFromSuperview() }
+    }
+    
+    private func createSelectionButton(saying text: String) -> UIButton {
+        let button = UIButton()
+        button.setTitle(text, for: .normal)
+        button.setTitleColor(.black, for: .normal)
+        button.backgroundColor = UIColor.gray.withAlphaComponent(0.1)
+        button.addTarget(self, action: #selector(optionButtonTapped(sender:)), for: .touchUpInside)
+        return button
+    }
+    
+    @objc private func optionButtonTapped(sender button: UIButton) {
+        delegate?.process(message: button.title(for: .normal) ?? "")
+    }
 }
