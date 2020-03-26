@@ -50,8 +50,7 @@ final class ChatViewController: UIViewController {
         }
     }
     
-    private let chatToken = "4EmAIn41rJozc3L5c2YAd4oBjDZ6UF34q4W5WMUKP5FpraqngmeFt866dzmE"
-    private var remote: RemoteChatbotServer = MockLocalChatbotServer(mockServer: ChatbotWebApp().createApp())
+    private var remote: RemoteChatbotServer = MockLocalChatbotServer(mockServer: ChatbotWebApp().createApp(), token: "4EmAIn41rJozc3L5c2YAd4oBjDZ6UF34q4W5WMUKP5FpraqngmeFt866dzmE")
     
     private var lastQuestion: Question?
     
@@ -94,7 +93,7 @@ final class ChatViewController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         isBotTyping = true
-        remote.startChat(withToken: chatToken, withHandler: handleMessageResponse(result:))
+        remote.startChat(with: handleMessageResponse(result:))
     }
     
     // MARK: Chat View
@@ -137,10 +136,8 @@ final class ChatViewController: UIViewController {
         
         let myMessage = ChatMessage(side: .local, text: message)
         messages.append(myMessage)
-        
         isBotTyping = true
-        
-        remote.send(answer: message, for: lastQuestion, withToken: chatToken, withHandler: handleMessageResponse(result:))
+        remote.send(answer: message, for: lastQuestion, withHandler: handleMessageResponse(result:))
     }
     
     private func saveMessages() {
